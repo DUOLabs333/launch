@@ -10,8 +10,11 @@ def extractApplications():
             if not file.endswith(".desktop"):
                 continue
             desktop_file=xdg.DesktopEntry.DesktopEntry(path+'/'+file)
+            info=[]
             if not desktop_file.getNoDisplay():
-                applications[desktop_file.getName()]=desktop_file.getExec()
+                info.append(desktop_file.getExec())
+                info.append(info.append(desktop_file.getTerminal()))
+                applications[desktop_file.getName()]=info
     
 
 def matchApplications():
@@ -19,7 +22,11 @@ def matchApplications():
     selection=fzf.communicate(input='\n'.join(applications.keys()).encode())[0].decode().strip()
     if not selection:
         return
-    subprocess.Popen(re.sub(" %.+?(?=( |$))", "",applications[selection]),shell=True)
+    else:
+        info=applications[selection]
+    f=subprocess.Popen(re.sub(" %.+?(?=( |$))", "",info[0]),shell=True,stdout=(subprocess.DEVNULL if not info[1] else None))
+    if info[1]:
+        f.wait()
     #subprocess.run(["fzf","--expect="+",".join(applications.keys())])
                     
 def main():
