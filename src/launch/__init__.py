@@ -47,7 +47,7 @@ def matchApplications():
         return
     else:
         info=applications[selection]
-    f=subprocess.Popen(re.sub(" %.+?(?=( |$))", "",info[0]),shell=True,stdout=(subprocess.DEVNULL if not info[1] else None))
+    f=subprocess.Popen(re.sub(" %.+?(?=( |$))", "",info[0]),shell=True,stdout=(subprocess.DEVNULL if not info[1] else None),stderr=subprocess.DEVNULL)
     if info[1]:
         f.wait()
     #subprocess.run(["fzf","--expect="+",".join(applications.keys())])
