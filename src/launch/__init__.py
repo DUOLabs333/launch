@@ -17,6 +17,8 @@ def extractApplications():
 def matchApplications():
     fzf = subprocess.Popen(["fzf","-1","--query="+(sys.argv[1] if len(sys.argv)>1 else "")], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     selection=fzf.communicate(input='\n'.join(applications.keys()).encode())[0].decode().strip()
+    if not selection:
+        return
     subprocess.Popen(re.sub(" %.+?(?=( |$))", "",applications[selection]),shell=True)
     #subprocess.run(["fzf","--expect="+",".join(applications.keys())])
                     
