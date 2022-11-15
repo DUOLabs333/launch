@@ -1,0 +1,39 @@
+site_name: pzp documentation
+docs_dir:  docs
+
+theme:
+  name: readthedocs
+  highlightjs: true
+
+plugins:
+- search
+- autorefs
+- mkdocstrings:
+    watch:
+    - pzp
+    - examples
+
+nav:
+  - Introduction: index.md
+  - License: license.md
+  - Code of Conduct: CODE_OF_CONDUCT.md
+  - Source Code Repository: "https://github.com/andreax79/pzp"
+  - Examples:
+    - "File picker": examples/file_picker.md
+    - "Number picker": examples/number_picker.md
+    - "Text picker": examples/text_picker.md
+  - API:
+    - "pzp": api/module.md
+    - "pzp.actions": api/actions.md
+    - "pzp.ansi": api/ansi.md
+    - "pzp.exceptions": api/exceptions.md
+    - "pzp.finder": api/finder.md
+    - "pzp.input": api/input.md
+    - "pzp.keys": api/keys.md
+    - "pzp.line_editor": api/line_editor.md
+    - "pzp.matcher": api/matcher.md
+    - "pzp.screen": api/screen.md
+
+markdown_extensions:
+  - markdown_include.include:
+      base_path: .

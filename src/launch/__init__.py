@@ -1,7 +1,7 @@
 import os,sys
 import xdg.DesktopEntry
 import thefuzz #Just in case I want to make my own version later to remove the dependency on fzf
-import subprocess,re
+import subprocess,re,shutil
 desktop_file_paths=[os.path.expanduser("~")+"/.local/share/applications","/usr/share/applications","/usr/local/share/applications"]
 applications={}
 def extractApplications():
@@ -36,22 +36,35 @@ def extractApplications():
                 info.append(info.append(desktop_file.getTerminal()))
                 applications[desktop_file.getName()]=info
     
-
+class NoAppFound(Exception):
+    pass
 def matchApplications():
-    fzf = subprocess.Popen(["fzf","-1","-e","-0","--prompt=Application: ","--query="+(sys.argv[1] if len(sys.argv)>1 else "")], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-    selection=fzf.communicate(input='\n'.join(applications.keys()).encode())[0].decode().strip()
-    if (fzf.returncode==1):
+    initial_input=sys.argv[1] if len(sys.argv)>1 else ""
+    if shutil.which("fzf"):
+        fzf = subprocess.Popen(["fzf","-1","-e","-0","--prompt=Application: ","--query="+initial_input], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+        selection=fzf.communicate(input='\n'.join(applications.keys()).encode())[0].decode().strip()
+        if (fzf.returncode==1):
+            raise NoAppFound
+    else:
+        import pzp
+        try:
+            selection=pzp.pzp(applications.keys(),input=initial_input)
+        except pzp.exceptions.AbortAction:
+            raise NoAppFound
+    return selection
+def runApplication():
+    try:
+        selection=matchApplications()
+    except NoAppFound:
         print("No matching applications!")
         return
     if not selection:
         return
-    else:
-        info=applications[selection]
+    info=applications[selection]
     f=subprocess.Popen(re.sub(" %.+?(?=( |$))", "",info[0]),shell=True,stdout=(subprocess.DEVNULL if not info[1] else None),stderr=subprocess.DEVNULL)
     if info[1]:
-        f.wait()
-    #subprocess.run(["fzf","--expect="+",".join(applications.keys())])
-                    
+       f.wait() 
+                     
 def main():
     extractApplications()
-    matchApplications()
+    runApplication()
