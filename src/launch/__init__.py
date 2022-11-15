@@ -1,6 +1,5 @@
 import os,sys
 import xdg.DesktopEntry
-import thefuzz #Just in case I want to make my own version later to remove the dependency on fzf
 import subprocess,re,shutil
 desktop_file_paths=[os.path.expanduser("~")+"/.local/share/applications","/usr/share/applications","/usr/local/share/applications"]
 applications={}
