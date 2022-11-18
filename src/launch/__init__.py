@@ -5,7 +5,7 @@ desktop_file_paths=[os.path.expanduser("~")+"/.local/share/applications","/usr/s
 applications={}
 def extractApplications():
     if sys.platform=='darwin':
-        stack=list(os.scandir('/Applications'))
+        stack=list(os.scandir('/Applications'))+list(os.scandir('/System/Applications'))
         visited={}
         while len(stack)>0:
             v=stack.pop()
@@ -47,6 +47,7 @@ def matchApplications():
     else:
         import pzp
         try:
+            print(applications.keys())
             pzp.pzp(applications.keys(),input=initial_input,lazy=True,handle_actions=None)
         except pzp.exceptions.AbortAction:
             return None
@@ -54,7 +55,10 @@ def matchApplications():
             if action.action=='accept':
                 return action.selected_item
             else:
-                raise NoAppFound
+                if not action.selected_item:
+                    raise NoAppFound
+                else:
+                    return action.selected_item
     return selection
 def runApplication():
     try:
