@@ -39,7 +39,7 @@ class NoAppFound(Exception):
     pass
 def matchApplications():
     initial_input=sys.argv[1] if len(sys.argv)>1 else ""
-    if 0:
+    if shutil.which("fzf"):
         fzf = subprocess.Popen(["fzf","-1","-e","-0","--prompt=Application: ","--query="+initial_input], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
         selection=fzf.communicate(input='\n'.join(applications.keys()).encode())[0].decode().strip()
         if (fzf.returncode==1):
@@ -47,7 +47,6 @@ def matchApplications():
     else:
         import pzp
         try:
-            print(applications.keys())
             pzp.pzp(applications.keys(),input=initial_input,lazy=True,handle_actions=None)
         except pzp.exceptions.AbortAction:
             return None
